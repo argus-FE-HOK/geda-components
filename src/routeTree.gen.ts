@@ -17,10 +17,17 @@ import { Route as MainImport } from './routes/main'
 
 // Create Virtual Routes
 
+const GedaLazyImport = createFileRoute('/geda')()
 const AboutLazyImport = createFileRoute('/about')()
 const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
+
+const GedaLazyRoute = GedaLazyImport.update({
+  id: '/geda',
+  path: '/geda',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/geda.lazy').then((d) => d.Route))
 
 const AboutLazyRoute = AboutLazyImport.update({
   id: '/about',
@@ -65,6 +72,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
+    '/geda': {
+      id: '/geda'
+      path: '/geda'
+      fullPath: '/geda'
+      preLoaderRoute: typeof GedaLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -74,12 +88,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
   '/main': typeof MainRoute
   '/about': typeof AboutLazyRoute
+  '/geda': typeof GedaLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
   '/main': typeof MainRoute
   '/about': typeof AboutLazyRoute
+  '/geda': typeof GedaLazyRoute
 }
 
 export interface FileRoutesById {
@@ -87,14 +103,15 @@ export interface FileRoutesById {
   '/': typeof IndexLazyRoute
   '/main': typeof MainRoute
   '/about': typeof AboutLazyRoute
+  '/geda': typeof GedaLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/main' | '/about'
+  fullPaths: '/' | '/main' | '/about' | '/geda'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/main' | '/about'
-  id: '__root__' | '/' | '/main' | '/about'
+  to: '/' | '/main' | '/about' | '/geda'
+  id: '__root__' | '/' | '/main' | '/about' | '/geda'
   fileRoutesById: FileRoutesById
 }
 
@@ -102,12 +119,14 @@ export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
   MainRoute: typeof MainRoute
   AboutLazyRoute: typeof AboutLazyRoute
+  GedaLazyRoute: typeof GedaLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
   MainRoute: MainRoute,
   AboutLazyRoute: AboutLazyRoute,
+  GedaLazyRoute: GedaLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -122,7 +141,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/main",
-        "/about"
+        "/about",
+        "/geda"
       ]
     },
     "/": {
@@ -133,6 +153,9 @@ export const routeTree = rootRoute
     },
     "/about": {
       "filePath": "about.lazy.tsx"
+    },
+    "/geda": {
+      "filePath": "geda.lazy.tsx"
     }
   }
 }
